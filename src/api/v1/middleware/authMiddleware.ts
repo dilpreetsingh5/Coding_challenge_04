@@ -25,6 +25,7 @@ export const authenticate = async (
   try {
     const decodedToken = await auth.verifyIdToken(idToken);
     res.locals.uid = decodedToken.uid;
+    res.locals.role = decodedToken.role || 'user'; // Default to 'user' if no role
     next();
   } catch (error) {
     console.error('Error verifying ID token:', error);
