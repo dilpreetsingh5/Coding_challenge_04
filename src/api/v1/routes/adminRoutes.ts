@@ -1,14 +1,14 @@
 import express, { Router } from "express";
 import { authenticate } from "../middleware/authMiddleware";
-import { authorizeAdmin } from "../middleware/adminMiddleware";
+import { authorize } from "../middleware/authorize";
 import { setCustomClaims, getUserDetails } from "../controllers/adminController";
 
 const router: Router = express.Router();
 
 /** Route to set custom claims for a user - requires admin role */
-router.post("/set-claims", authenticate, authorizeAdmin, setCustomClaims);
+router.post("/set-claims", authenticate, authorize(['admin']), setCustomClaims);
 
 /** Route to get user details - requires admin role */
-router.get("/user/:uid", authenticate, authorizeAdmin, getUserDetails);
+router.get("/user/:uid", authenticate, authorize(['admin']), getUserDetails);
 
 export default router;

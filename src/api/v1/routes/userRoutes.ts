@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { authenticate } from "../middleware/authMiddleware";
-import { authorizeAdmin } from "../middleware/adminMiddleware";
+import { authorize } from "../middleware/authorize";
 import { getUserProfile, deleteUser } from "../controllers/userController";
 
 const router: Router = express.Router();
@@ -9,6 +9,6 @@ const router: Router = express.Router();
 router.get("/profile", authenticate, getUserProfile);
 
 /** Route to delete a user - requires authentication and admin role */
-router.delete("/:id", authenticate, authorizeAdmin, deleteUser);
+router.delete("/:id", authenticate, authorize(['admin']), deleteUser);
 
 export default router;
