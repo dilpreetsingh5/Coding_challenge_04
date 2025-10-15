@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { HTTP_STATUS } from '../../../constants/httpConstants';
+import { AuthorizationError } from '../../../errors/AuthorizationError';
 
 /**
  * Middleware to authorize users based on roles.
@@ -22,8 +22,6 @@ export const authorize = (requiredRoles: string[], allowSameUser: boolean = fals
       return next();
     }
 
-    res.status(HTTP_STATUS.FORBIDDEN).json({
-      error: 'Insufficient permissions',
-    });
+    throw new AuthorizationError('Insufficient permissions');
   };
 };
