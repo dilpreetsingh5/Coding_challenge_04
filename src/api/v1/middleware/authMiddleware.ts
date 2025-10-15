@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { auth } from '../../../config/firebaseConfig';
-import { HTTP_STATUS } from '../../../constants/httpConstants';
+import { AuthenticationError } from '../../../errors/AuthenticationError';
 
 /**
  * Middleware to authenticate users using Firebase ID tokens.
@@ -14,10 +14,7 @@ export const authenticate = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(HTTP_STATUS.UNAUTHORIZED).json({
-      error: 'Authorization header missing or invalid',
-    });
-    return;
+    throw new AuthenticationError('Authorization header missing or invalid');
   }
 
   const idToken = authHeader.split('Bearer ')[1];
@@ -25,11 +22,10 @@ export const authenticate = async (
   try {
     const decodedToken = await auth.verifyIdToken(idToken);
     res.locals.uid = decodedToken.uid;
+    res.locals.role = decodedToken.role || 'user'; // Default to 'user' if no role
     next();
   } catch (error) {
     console.error('Error verifying ID token:', error);
-    res.status(HTTP_STATUS.UNAUTHORIZED).json({
-      error: 'Invalid or expired token',
-    });
+    throw new AuthenticationError('Invalid or expired token');
   }
 };
